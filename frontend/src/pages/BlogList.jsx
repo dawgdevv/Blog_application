@@ -1,0 +1,145 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+
+const BlogList = () => {
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `http://localhost:5000/api/blogs/getblogs`
+        );
+        setBlogs(response.data.blogs);
+        setTotalPages(response.data.totalPages || 1);
+      } catch (err) {
+        setError("Failed to load blogs. Please try again later.");
+        console.error("Error fetching blogs:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, [currentPage]);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  if (loading && blogs.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading blogs...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <div className="text-red-500 mb-4">❌</div>
+        <h3 className="text-xl font-semibold mb-2">Something went wrong</h3>
+        <p className="text-gray-600">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">Latest Blog Posts</h1>
+
+      {blogs.length === 0 ? (
+        <div className="text-center py-10">
+          <p className="text-gray-600">No blogs found. Check back later!</p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogs.map((blog) => (
+              <Link
+                to={`/blog/${blog._id}`}
+                key={blog._id}
+                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+              >
+                {blog.coverImage && (
+                  <img
+                    src={blog.coverImage}
+                    alt={blog.title}
+                    className="w-full h-48 object-cover"
+                  />
+                )}
+                <div className="p-5">
+                  <h2 className="text-xl font-semibold mb-2 text-gray-800">
+                    {blog.title}
+                  </h2>
+                  <p className="text-gray-600 text-sm mb-4">
+                    By {blog.author?.name || "Unknown"} •{" "}
+                    {new Date(blog.timestamp).toLocaleDateString()}
+                  </p>
+                  <p className="text-gray-700 line-clamp-3">
+                    {blog.content.substring(0, 150)}...
+                  </p>
+                  <div className="mt-4 text-blue-600 font-medium">
+                    Read more →
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-10">
+              <nav className="flex items-center gap-1">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded border border-gray-300 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handlePageChange(index + 1)}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === index + 1
+                        ? "bg-blue-600 text-white"
+                        : "border border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded border border-gray-300 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </nav>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default BlogList;

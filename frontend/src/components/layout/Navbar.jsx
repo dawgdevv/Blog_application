@@ -14,7 +14,7 @@ const Navbar = () => {
   return (
     <nav className="w-full bg-white border-b px-4 py-2 flex justify-between items-center">
       <Link to="/" className="text-lg font-bold text-blue-600">
-        BlogApp
+        BlogSphere
       </Link>
       <div className="flex items-center gap-2">
         {isAuthenticated ? (

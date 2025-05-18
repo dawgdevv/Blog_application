@@ -18,8 +18,9 @@ const EditBlog = () => {
     const fetchBlog = async () => {
       try {
         setLoading(true);
+        // FIX: Use the correct endpoint to fetch a blog by ID
         const response = await axios.get(
-          `http://localhost:5000/api/blogs/${id}`
+          `http://localhost:5000/api/blogs/getblogs/${id}`
         );
         const blog = response.data;
 
@@ -63,9 +64,14 @@ const EditBlog = () => {
         coverImage: coverImage || undefined,
       };
 
-      await axios.put(`http://localhost:5000/api/blogs/${id}`, blogData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      // FIX: Use the correct endpoint to update a blog
+      await axios.put(
+        `http://localhost:5000/api/blogs/update/${id}`,
+        blogData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       navigate(`/blog/${id}`);
     } catch (err) {

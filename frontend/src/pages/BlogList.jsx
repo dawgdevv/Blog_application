@@ -8,12 +8,12 @@ const BlogList = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        // Ensure your API endpoint for fetching blogs is correct
         const response = await axios.get(
           `http://localhost:5000/api/blogs/getblogs?page=${currentPage}&limit=6`
         );
@@ -21,6 +21,7 @@ const BlogList = () => {
         if (response.data && response.data.blogs) {
           setBlogs(response.data.blogs);
           setTotalPages(response.data.totalPages || 1);
+          setTotalCount(response.data.totalCount || 0);
         } else if (Array.isArray(response.data)) {
           setBlogs(response.data);
           setTotalPages(1);
@@ -44,6 +45,49 @@ const BlogList = () => {
       setCurrentPage(newPage);
       window.scrollTo(0, 0);
     }
+  };
+
+  // Generate page numbers to display (show max 5 page numbers)
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      // If we have few pages, show all of them
+      for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+    } else {
+      // Always include first page
+      pageNumbers.push(1);
+
+      // Calculate start and end of page range to show
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+
+      if (currentPage <= 2) {
+        end = 4;
+      } else if (currentPage >= totalPages - 1) {
+        start = totalPages - 3;
+      }
+
+      if (start > 2) {
+        pageNumbers.push("...");
+      }
+
+      for (let i = start; i <= end; i++) {
+        pageNumbers.push(i);
+      }
+
+      if (end < totalPages - 1) {
+        pageNumbers.push("...");
+      }
+
+      // Always include last page
+      pageNumbers.push(totalPages);
+    }
+
+    return pageNumbers;
   };
 
   if (loading && blogs.length === 0) {
@@ -84,12 +128,15 @@ const BlogList = () => {
                 key={blog._id}
                 className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border border-black flex flex-col"
               >
-                {/* Only render image if it exists */}
                 {blog.coverImage && (
                   <img
                     src={blog.coverImage}
                     alt={blog.title}
                     className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = "none";
+                    }}
                   />
                 )}
                 <div className={`p-5 ${!blog.coverImage ? "pt-8" : ""}`}>
@@ -130,19 +177,25 @@ const BlogList = () => {
                   Previous
                 </button>
 
-                {[...Array(totalPages)].map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handlePageChange(index + 1)}
-                    className={`px-3 py-1 rounded ${
-                      currentPage === index + 1
-                        ? "bg-blue-600 text-white"
-                        : "border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+                {getPageNumbers().map((pageNum, index) =>
+                  pageNum === "..." ? (
+                    <span key={`ellipsis-${index}`} className="px-2">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={`page-${pageNum}`}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === pageNum
+                          ? "bg-blue-600 text-white"
+                          : "border border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                )}
 
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
@@ -152,6 +205,12 @@ const BlogList = () => {
                   Next
                 </button>
               </nav>
+            </div>
+          )}
+
+          {totalCount > 0 && (
+            <div className="text-center mt-4 text-gray-500 text-sm">
+              Showing {blogs.length} of {totalCount} total blogs
             </div>
           )}
         </>

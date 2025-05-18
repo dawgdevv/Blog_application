@@ -28,14 +28,27 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    // Use populate to include author details
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalCount = await Blog.countDocuments();
+
+    // Use populate to include author details with pagination
     const blogs = await Blog.find()
       .populate("author", "name") // Only get the author's name
-      .sort({ createdAt: -1 }); // Sort by newest first
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalCount / limit);
 
     res.status(200).json({
       blogs: blogs,
-      totalPages: 1, // You can implement actual pagination later
+      totalPages: totalPages,
+      currentPage: page,
+      totalCount: totalCount,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

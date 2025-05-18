@@ -44,7 +44,8 @@ const CreateBlog = () => {
         }
       );
 
-      navigate(`/blog/${response._id}`);
+      // Fix this line - response.data.blog._id is the correct path
+      navigate(`/blog/${response.data.blog._id}`);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create blog post");
       console.error("Error creating blog:", err);

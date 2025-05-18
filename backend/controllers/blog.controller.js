@@ -6,12 +6,20 @@ export const createBlog = async (req, res) => {
     const newBlog = new Blog({
       title,
       content,
-      author: req.user._id, // Add the author ID from the authenticated user
+      author: req.user._id,
+      coverImage,
     });
+
     await newBlog.save();
+
+    const populatedBlog = await Blog.findById(newBlog._id).populate(
+      "author",
+      "name"
+    );
+
     res.status(201).json({
       message: "Blog created successfully",
-      blog: newBlog,
+      blog: populatedBlog,
     });
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

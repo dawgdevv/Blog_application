@@ -13,11 +13,21 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
+        // Ensure your API endpoint for fetching blogs is correct
         const response = await axios.get(
-          `http://localhost:5000/api/blogs/getblogs`
+          `http://localhost:5000/api/blogs/getblogs?page=${currentPage}&limit=6`
         );
-        setBlogs(response.data.blogs);
-        setTotalPages(response.data.totalPages || 1);
+
+        if (response.data && response.data.blogs) {
+          setBlogs(response.data.blogs);
+          setTotalPages(response.data.totalPages || 1);
+        } else if (Array.isArray(response.data)) {
+          setBlogs(response.data);
+          setTotalPages(1);
+        } else {
+          setBlogs([]);
+          console.error("Unexpected API response format:", response.data);
+        }
       } catch (err) {
         setError("Failed to load blogs. Please try again later.");
         console.error("Error fetching blogs:", err);
@@ -61,7 +71,7 @@ const BlogList = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8 text-center">Latest Blog Posts</h1>
 
-      {blogs.length === 0 ? (
+      {!blogs || blogs.length === 0 ? (
         <div className="text-center py-10">
           <p className="text-gray-600">No blogs found. Check back later!</p>
         </div>
@@ -72,8 +82,9 @@ const BlogList = () => {
               <Link
                 to={`/blog/${blog._id}`}
                 key={blog._id}
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 border border-black flex flex-col"
               >
+                {/* Only render image if it exists */}
                 {blog.coverImage && (
                   <img
                     src={blog.coverImage}
@@ -81,16 +92,24 @@ const BlogList = () => {
                     className="w-full h-48 object-cover"
                   />
                 )}
-                <div className="p-5">
+                <div className={`p-5 ${!blog.coverImage ? "pt-8" : ""}`}>
                   <h2 className="text-xl font-semibold mb-2 text-gray-800">
                     {blog.title}
                   </h2>
                   <p className="text-gray-600 text-sm mb-4">
-                    By {blog.author?.name || "Unknown"} •{" "}
-                    {new Date(blog.timestamp).toLocaleDateString()}
+                    <span className="font-medium">
+                      By {blog.author?.name || "Unknown"}
+                    </span>
+                    <span className="mx-2">•</span>
+                    <span>
+                      {new Date(
+                        blog.timestamp || blog.createdAt
+                      ).toLocaleDateString()}
+                    </span>
                   </p>
                   <p className="text-gray-700 line-clamp-3">
-                    {blog.content.substring(0, 150)}...
+                    {blog.content.substring(0, 150)}
+                    {blog.content.length > 150 ? "..." : ""}
                   </p>
                   <div className="mt-4 text-blue-600 font-medium">
                     Read more →
@@ -100,7 +119,6 @@ const BlogList = () => {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center mt-10">
               <nav className="flex items-center gap-1">

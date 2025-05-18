@@ -11,6 +11,7 @@ import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import CreateBlog from "./pages/CreateBlog";
 import EditBlog from "./pages/EditBlog";
+import MyBlogs from "./pages/MyBlogs"; // Import new component
 import { useAuth } from "./hooks/useAuth";
 
 // Protected route component
@@ -54,6 +55,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <EditBlog />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-blogs"
+                element={
+                  <ProtectedRoute>
+                    <MyBlogs />
                   </ProtectedRoute>
                 }
               />

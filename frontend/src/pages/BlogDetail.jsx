@@ -36,7 +36,7 @@ const BlogDetail = () => {
     if (window.confirm("Are you sure you want to delete this blog post?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/blogs/${id}`, {
+        await axios.delete(`http://localhost:5000/api/blogs/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         navigate("/");

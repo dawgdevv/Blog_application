@@ -15,7 +15,9 @@ const BlogList = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:5000/api/blogs/getblogs?page=${currentPage}&limit=6`
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/blogs/getblogs?page=${currentPage}&limit=6`
         );
 
         if (response.data && response.data.blogs) {

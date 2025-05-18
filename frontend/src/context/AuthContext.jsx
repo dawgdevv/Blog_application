@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/users/profile",
+        `${import.meta.env.VITE_API_BASE_URL}/users/profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const response = await axios.post(
-        "http://localhost:5000/api/users/login",
+        `${import.meta.env.VITE_API_BASE_URL}/users/login`,
         {
           email,
           password,
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const response = await axios.post(
-        "http://localhost:5000/api/users/register",
+        `${import.meta.env.VITE_API_BASE_URL}/users/register`,
         {
           name,
           email,

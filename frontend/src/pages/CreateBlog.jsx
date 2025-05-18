@@ -37,14 +37,13 @@ const CreateBlog = () => {
       };
 
       const response = await axios.post(
-        "http://localhost:5000/api/blogs/create",
+        `${import.meta.env.VITE_API_BASE_URL}/blogs/create`,
         blogData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      // Fix this line - response.data.blog._id is the correct path
       navigate(`/blog/${response.data.blog._id}`);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create blog post");

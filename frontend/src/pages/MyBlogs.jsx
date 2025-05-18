@@ -11,7 +11,6 @@ const MyBlogs = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect if not authenticated
     if (!isAuthenticated) {
       navigate("/");
       return;
@@ -22,7 +21,7 @@ const MyBlogs = () => {
         setLoading(true);
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:5000/api/blogs/getblogs/user",
+          `${import.meta.env.VITE_API_BASE_URL}/blogs/getblogs/user`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -51,9 +50,12 @@ const MyBlogs = () => {
     if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/blogs/delete/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_BASE_URL}/blogs/delete/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         // Remove the deleted blog from state
         setBlogs(blogs.filter((blog) => blog._id !== id));
       } catch (err) {

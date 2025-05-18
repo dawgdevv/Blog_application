@@ -20,7 +20,7 @@ const EditBlog = () => {
         setLoading(true);
         // FIX: Use the correct endpoint to fetch a blog by ID
         const response = await axios.get(
-          `http://localhost:5000/api/blogs/getblogs/${id}`
+          `${import.meta.env.VITE_API_BASE_URL}/blogs/getblogs/${id}`
         );
         const blog = response.data;
 
@@ -66,7 +66,7 @@ const EditBlog = () => {
 
       // FIX: Use the correct endpoint to update a blog
       await axios.put(
-        `http://localhost:5000/api/blogs/update/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/blogs/update/${id}`,
         blogData,
         {
           headers: { Authorization: `Bearer ${token}` },

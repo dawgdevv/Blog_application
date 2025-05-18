@@ -16,7 +16,7 @@ const BlogDetail = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `http://localhost:5000/api/blogs/getblogs/${id}`
+          `${import.meta.env.VITE_API_BASE_URL}/blogs/getblogs/${id}`
         );
         setBlog(response.data);
       } catch (err) {
@@ -36,9 +36,12 @@ const BlogDetail = () => {
     if (window.confirm("Are you sure you want to delete this blog post?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/blogs/delete/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        await axios.delete(
+          `${import.meta.env.VITE_API_BASE_URL}/blogs/delete/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         navigate("/");
       } catch (err) {
         alert("Failed to delete blog post. Please try again.");
@@ -156,5 +159,4 @@ const BlogDetail = () => {
     </div>
   );
 };
-
 export default BlogDetail;

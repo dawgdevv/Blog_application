@@ -6,6 +6,7 @@ A full-stack blog application that allows users to create, read, update, and del
 
 - [Features](#features)
 - [Technologies](#technologies)
+- [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
 - [Contributing](#contributing)
@@ -25,6 +26,35 @@ A full-stack blog application that allows users to create, read, update, and del
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB
 - **Authentication**: JWT (JSON Web Tokens)
+
+## Architecture
+
+The application follows a **client-server architecture**:
+
+- **Frontend (Client-Side)**:
+
+  - Built with **React.js**, a JavaScript library for building user interfaces. It handles the presentation layer, allowing users to interact with the application.
+  - Styled with **Tailwind CSS**, a utility-first CSS framework for rapid UI development.
+  - Communicates with the backend via HTTP requests to the defined API endpoints.
+  - Manages user sessions and interactions.
+
+- **Backend (Server-Side)**:
+
+  - Developed using **Node.js** and the **Express.js** framework. It provides a RESTful API for the frontend.
+  - Handles business logic, including:
+    - User authentication and authorization using **JWT (JSON Web Tokens)**.
+    - CRUD (Create, Read, Update, Delete) operations for blog posts.
+    - Data validation and processing.
+  - Interacts with the database to store and retrieve data.
+
+- **Database**:
+
+  - **MongoDB**, a NoSQL document database, is used for data persistence. It stores user information, blog posts, and potentially other related data like comments.
+
+- **Overall Structure**:
+  - The frontend and backend are developed as separate concerns but are part of the same project.
+  - The backend exposes a set of API endpoints that the frontend consumes to display data and perform actions.
+  - This separation allows for independent development and scaling of the frontend and backend components.
 
 ## Getting Started
 
